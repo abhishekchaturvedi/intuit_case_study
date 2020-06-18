@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  userlogin_app:
+    build: .
+    command: gunicorn -b 0.0.0.0:8000 --access-logfile - --reload "userlogin.app:create_app()"
+    environment:
+      PYTHONUNBUFFERED: 'true'
+    volumes:
+      - '.:/userlogin'
+    ports:
+      - '8000:8000'
