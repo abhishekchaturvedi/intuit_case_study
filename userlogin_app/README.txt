@@ -50,3 +50,6 @@ Steps to build this app:
     that will serve the landing page.
 
     To Run: docker-compose up --build
+
+2. Simple login/signup form. Shamelessly took from:
+   https://codepen.io/colorlib/full/rxddKy
