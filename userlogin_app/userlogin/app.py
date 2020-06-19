@@ -1,4 +1,5 @@
 from flask import Flask
+from userlogin.blueprints.user import user
 
 def create_app():
     """
@@ -12,6 +13,10 @@ def create_app():
     app.config.from_object('config.settings')
     app.config.from_pyfile('settings.py')
 
+    app.logger.setLevel(app.config['LOG_LEVEL'])
+    app.logger.debug("Set the log level to debug")
+    app.register_blueprint(user)
+    
     @app.route('/')
     def index():
         """
