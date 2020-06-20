@@ -3,3 +3,7 @@ Flask==1.1.1
 
 # WSGI HTTP Server
 gunicorn==19.9.0
+
+
+# RESTful API support
+flask-classful==0.14

@@ -1,5 +1,6 @@
 from flask import Flask
 from userlogin.blueprints.user import user
+from userlogin.api.auth import AuthView
 
 def create_app():
     """
@@ -16,7 +17,8 @@ def create_app():
     app.logger.setLevel(app.config['LOG_LEVEL'])
     app.logger.debug("Set the log level to debug")
     app.register_blueprint(user)
-    
+    AuthView.register(app)
+
     @app.route('/')
     def index():
         """

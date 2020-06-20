@@ -1,5 +1,6 @@
 
 {% extends 'layouts/base.html' %}
+{% import 'macros/form.html' as f with context %}
 {% block title %}Intuit case study{% endblock %}
 {% block body %}
 <body translate="no">
@@ -12,12 +13,20 @@
         <button>create</button>
         <p class="message">Already registered? <a href="#">Sign In</a></p>
       </form>
-      <form class="login-form" id="login">
+      {% call f.form_tag('AuthView:post', fid='login') %}
+      <form class="login-form">
         <input type="text" placeholder="username" />
         <input type="password" placeholder="password" />
-        <button>login</button>
+        <div class="row">
+          <div class="col-md-12">
+            <button type="submit" class="btn btn-primary btn-block">
+              login
+            </button>
+          </div>
+        </div>
         <p class="message">Not registered? <a href="#">Create an account</a></p>
       </form>
+      {% endcall %}
     </div>
   </div>
   <script src="https://static.codepen.io/assets/common/stopExecutionOnTimeout-157cd5b220a5c80d4ff8e0e70ac069bffd87a61252088146915e8726e5d9f147.js"></script>
