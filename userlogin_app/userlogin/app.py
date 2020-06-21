@@ -1,6 +1,10 @@
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
 from userlogin.blueprints.user import user
 from userlogin.api.auth import AuthView
+
+db = SQLAlchemy()
 
 def create_app():
     """
@@ -18,12 +22,8 @@ def create_app():
     app.logger.debug("Set the log level to debug")
     app.register_blueprint(user)
     AuthView.register(app)
-
-    @app.route('/')
-    def index():
-        """
-        Render the welcome response.
-        """
-        return "Start of Intuit case study!"
+    
+    # Initialize db extention to our app.
+    db.init_app(app)
 
     return app
