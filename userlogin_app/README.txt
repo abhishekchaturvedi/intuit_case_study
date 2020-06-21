@@ -42,7 +42,14 @@ Code layout:
   app.
 - user-login directory will contain the source code etc. we'll mostly add more
   source code here.
--
+  - we have added a few more folders:
+      - blueprints -- will contain different resource handling (for now we only
+        have one user and we'll have html pages/route end point redirect etc.)
+      - static -- should contain static information like images/scripts
+      - templates -- any base templates which the whole application could
+        inherit.
+      - API -- contains the implementation of our APIs -- we will define class
+        based views for different API endpoints. 
 
 Steps to build this app:
 1. Let's build a basic web app with flask, running as a micro service.
@@ -53,3 +60,17 @@ Steps to build this app:
 
 2. Simple login/signup form. Shamelessly took from:
    https://codepen.io/colorlib/full/rxddKy
+
+3. Using flask-classful, we got our first API plumbing done. i.e., from the
+   login page, the post request comes to the back-end. A few additional things
+   that were done were to have specified a jinja based form template so we
+   the API call plumbing can work without writing lot of html code. From this
+   point on, hoping that there's less frontend and more backend. :-)
+
+4. Let's integrate a DB, have an admin user and make sure that the login works
+   since we already have login API. We'll be using:
+   - postgres as our DB (running in a separate container)
+   - flask-sqlalchemy & psycopg as the adapter and middleware for the db. the
+     advantage of using this is so that we can write python code (logical
+     statements), rather than using actual SQL queries for interacting with our
+     db.
