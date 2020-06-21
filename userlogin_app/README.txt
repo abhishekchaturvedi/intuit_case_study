@@ -49,7 +49,7 @@ Code layout:
       - templates -- any base templates which the whole application could
         inherit.
       - API -- contains the implementation of our APIs -- we will define class
-        based views for different API endpoints. 
+        based views for different API endpoints.
 
 Steps to build this app:
 1. Let's build a basic web app with flask, running as a micro service.
@@ -74,3 +74,11 @@ Steps to build this app:
      advantage of using this is so that we can write python code (logical
      statements), rather than using actual SQL queries for interacting with our
      db.
+5. Create User model and hook up the DB to the app. Also create a CLI to
+   interact with the db. We'll extend this CLI to interact/test our APIs as well.
+   One issue I faced while doing this is the DB container comes up but the
+   POSTGRES_USER/POSTGRES_DB were never created even though we specified that
+   as environment variables as per the documentation. To work around this issue
+   we just got into the postgres container and created the user and the db used
+   manually for now. We'll have to find a way to add this either as a dependency
+   or do it programtically somehow. XXX (TODO) for now. 
