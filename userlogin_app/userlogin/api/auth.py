@@ -8,6 +8,6 @@ class AuthView(FlaskView):
         json_data = request.get_json()
         current_app.logger.debug("Got API call with json object {0}".format(json_data))
         response = jsonify({
-            'data': {}
+            'data': {'message' : 'Login Success'}
         })
         return response, 200

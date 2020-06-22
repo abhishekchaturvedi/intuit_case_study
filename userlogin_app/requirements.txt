@@ -15,3 +15,6 @@ SQLAlchemy-Utils==0.34.2
 
 # Misc.
 pytz==2020.1
+
+# Testing
+pytest==5.1.0
