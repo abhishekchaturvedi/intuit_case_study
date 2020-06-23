@@ -59,7 +59,7 @@ class User(db.Model):
         is empty or None, then return None.
 
         :param plaintext_pass: plain text password
-        :return encypted password.
+        :return: encypted password.
         """
         if plaintext_pass:
             return generate_password_hash(plaintext_pass)
@@ -75,6 +75,16 @@ class User(db.Model):
         """
         return User.query.filter(
             (User.email == username) | (User.username == username)).first()
+
+    def authenticated(self, password=None):
+        """
+        Check if the user is authenticated by comparing the stored (hash)
+
+        :param password: user's password
+        :return: True if authenticated
+        """
+        assert password is not None
+        return check_password_hash(self.password, password)
 
     def save(self):
         """

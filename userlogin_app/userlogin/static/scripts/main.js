@@ -12,6 +12,10 @@ var login = function () {
       'username': $username.val(),
       'password': $password.val()
     }
+    console.log('username:', username);
+    console.log('password:', password);
+    var $error = $('#form_error');
+
 
     return $.ajax({
       type: 'post',

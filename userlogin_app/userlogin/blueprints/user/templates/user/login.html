@@ -15,8 +15,8 @@
       </form>
       {% call f.form_tag('AuthView:post', fid='login') %}
       <form class="login-form">
-        <input type="text" placeholder="username" />
-        <input type="password" placeholder="password" />
+        <input type="text" class="form-control" id="username" name="username" maxlength="255" placeholder="Username">
+        <input type="password" class="form-control" id="password" name="password" maxlength="128" placeholder="Password">
         <div class="row">
           <div class="col-md-12">
             <button type="submit" class="btn btn-primary btn-block">

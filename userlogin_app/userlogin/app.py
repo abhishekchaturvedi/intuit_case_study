@@ -1,10 +1,20 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
+from flask_jwt_extended import JWTManager
+import logging
+from flask.logging import default_handler
+
+db = SQLAlchemy()
+marshmallow = Marshmallow()
+jwt = JWTManager()
 
 from userlogin.blueprints.user import user
 from userlogin.api.auth import AuthView
 
-db = SQLAlchemy()
+formatter = logging.Formatter(
+    '[%(asctime)s] %(module)s:%(funcName)s:%(lineno)d[%(levelname)s] %(message)s'
+)
 
 def create_app():
     """
@@ -19,11 +29,15 @@ def create_app():
     app.config.from_pyfile('settings.py')
 
     app.logger.setLevel(app.config['LOG_LEVEL'])
-    app.logger.debug("Set the log level to debug")
+    default_handler.setFormatter(formatter)
+
+    app.logger.debug(app.config)
     app.register_blueprint(user)
     AuthView.register(app)
-    
-    # Initialize db extention to our app.
+
+    # Initialize extentions to our app.
     db.init_app(app)
+    marshmallow.init_app(app)
+    jwt.init_app(app)
 
     return app
