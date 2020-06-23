@@ -19,13 +19,13 @@ Relationships:
 
 RESTful APIs:
  * PROVIDE CRUD interface for api endpoints -- wherever applicable.
-- user-login/users/ GET -- lists the users (only for admins (or if there's some
+- /api/<version-num>/users/ GET -- lists the users (only for admins (or if there's some
                            feature in the future which shows community etc.
-- user-login/users/ PUT -- creates a new user
-- user-login/users/ DELETE -- delete all users (only for admins)
-- user-login/users/<id> GET -- gets info for user with user-id <id>
-- user-login/users/<id> PATCH - update information for user with user-ide <id>
-- user-loging/users/<id> DELETE - deletes information for user with user-id <id>
+- /api/<version-num>/users/ POST -- creates a new user
+- /api/<version-num>/users/ DELETE -- delete all users (only for admins)
+- /api/<version-num>/users/<id> GET -- gets info for user with user-id <id>
+- /api/<version-num>/users/<id> PATCH - update information for user with user-ide <id>
+- /api/<version-num>/users/<id> DELETE - deletes information for user with user-id <id>
 
 
 Persistence Mechanism
@@ -81,4 +81,15 @@ Steps to build this app:
    as environment variables as per the documentation. To work around this issue
    we just got into the postgres container and created the user and the db used
    manually for now. We'll have to find a way to add this either as a dependency
-   or do it programtically somehow. XXX (TODO) for now. 
+   or do it programtically somehow. XXX (TODO) for now.
+
+6. Add User login/authorization. Since we already have a seed user, we can test
+   with that. TODO: Add settings page where user details can be seen.
+
+7. Now that one API has been added. Add the rest. Now, we have added APIs for:
+- /api/<version-num>/users/ GET -- lists the users (only for admins (or if there's some
+                           feature in the future which shows community etc.
+- /api/<version-num>/users/ DELETE -- delete all users (only for admins)
+- /api/<version-num>/users/<id> GET -- gets info for user with user-id <id>
+- /api/<version-num>/users/<id> PATCH - update information for user with user-ide <id>
+- /api/<version-num>/users/<id> DELETE - deletes information for user with user-id <id>

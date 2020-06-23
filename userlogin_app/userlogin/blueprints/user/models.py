@@ -86,6 +86,25 @@ class User(db.Model):
         assert password is not None
         return check_password_hash(self.password, password)
 
+    def is_admin(self):
+        """
+        Check if the user has admin role
+
+        :return: True if admin
+        """
+        return self.role == 'admin'
+
+    def update_username(self, new_username):
+        """
+        Update user's Username
+
+        :param new_username: New username
+        :return: Updated username object
+        """
+        self.username = new_username
+        db.session.commit()
+        return self
+
     def save(self):
         """
         Save a model instance.
