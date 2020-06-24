@@ -44,8 +44,7 @@ class UserSchema(marshmallow.Schema):
 
 
 class UserQuery(marshmallow.Schema):
-    username = fields.Str(required=True,
-                          validate=[validate.Length(min=3, max=255)])
+    username = fields.Str(required=False, default=None)
 
 
 class UserUpdateSchema(marshmallow.Schema):

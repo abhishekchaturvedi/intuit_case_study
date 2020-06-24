@@ -13,6 +13,23 @@ from userlogin.blueprints.user.schemas import (
 )
 
 
+# XXX: Ideally, I should move this function to some lib/util module.
+def match_current_user(username):
+    """
+    Utility function to match given name with current (logged in)
+    user. Both username and email are matched.
+
+    :param username: Username to match
+    :return: True if matches the current logged in user.
+
+    """
+    if current_user is not None and \
+       (current_user.username == username or \
+        current_user.email == username):
+        return True
+    return False
+
+
 class UsersView(V1FlaskView):
     def post(self):
         json_data = request.get_json()
@@ -39,28 +56,42 @@ class UsersView(V1FlaskView):
 
         return jsonify(data), 200
 
+    # The jwt required here ensures that only the user having the valid
+    # token presented to them earlier will have access to this endpoint.
+    # This is the functionality we get from the framework. Which would
+    # mean that non-logged in users can't even get here. Rest of the
+    # Permission checking logic should be in the endpoint.
+    @jwt_required
     def get(self):
         json_data = request.get_json()
-        current_app.logger.debug('Got data: {0}'.format(json_data))
-        current_app.logger.debug('type(current user): {0}'.format(type(current_user)))
-        current_app.logger.debug('current user: {0}'.format(current_user))
+        current_app.logger.debug('Gotts data: {0}'.format(json_data))
+        current_app.logger.debug('current user: {0}'.format(current_user.username))
+        current_app.logger.debug('Request: {0}'.format(request))
 
         # Try to get the username from the request.
         try:
-            current_app.logger.debug('Trying to get username from request: {0}'.format(request))
             username = request.args.get('username', default=None, type=str)
             current_app.logger.debug('Got username {0}'.format(username))
             if username is None:
                 raise(AttributeError)
         except AttributeError as e:
             current_app.logger.debug('Failed to get username from request: {0}'.format(e))
-            username = user_query_schema.load(json_data)['username']
-            current_app.logger.debug('Got username {0}'.format(username))
+            if json_data is not None:
+                username = user_query_schema.load(json_data)['username']
+                current_app.logger.debug('Got username {0}'.format(username))
+            else:
+                username = None
         except Exception as eall:
             current_app.logger.debug('Failed to load query schema: {0}'.format(eall))
             username = None
 
-        if username is not None:
+        current_app.logger.debug('Query for username {0}, current_user: {1}'
+                                 ', admin: {2}'.format(
+                                                    username,
+                                                    current_user.username,
+                                                    current_user.is_admin()))
+        if username is not None and \
+            (username == current_user.username or current_user.is_admin()):
             # Good request from current user self or admin for
             # a given user
             user = User.find_user(username)
@@ -68,10 +99,16 @@ class UsersView(V1FlaskView):
                 response = {'data': user_schema.dump(user)}
             else:
                 response = {'error' : 'Failed to find user'}
-        else:
+        elif current_user.is_admin():
             ## Good request, give specific user or all users.
             users = User.query.all()
             response = {'data' : users_schema.dump(users)}
+        else:
+            response = {
+                'error': 'Invalid request. Not authorized.'
+            }
+
+            return jsonify(response), 422
 
         return response, 200
 

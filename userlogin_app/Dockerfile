@@ -12,4 +12,4 @@ COPY . .
 ## Will run setup.py to install the CLI.
 RUN pip install --editable .
 
-CMD gunicorn -b 0.0.0.0:8001 --access-logfile - "userlogin.app:create_app()"
+CMD gunicorn -b 0.0.0.0:8001 --access-logfile - --error-logfile - --reload "userlogin.app:create_app()"

@@ -12,7 +12,7 @@ services:
 
   userlogin_app:
     build: .
-    command: gunicorn -b 0.0.0.0:8001 --access-logfile - --reload "userlogin.app:create_app()"
+    #command: gunicorn -b 0.0.0.0:8001 --access-logfile - --reload "userlogin.app:create_app()"
     environment:
       PYTHONUNBUFFERED: 'true'
     volumes:

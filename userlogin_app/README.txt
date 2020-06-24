@@ -93,3 +93,14 @@ Steps to build this app:
 - /api/<version-num>/users/<id> GET -- gets info for user with user-id <id>
 - /api/<version-num>/users/<id> PATCH - update information for user with user-ide <id>
 - /api/<version-num>/users/<id> DELETE - deletes information for user with user-id <id>
+
+8. Next step is to review each of these APIs and add security/validation/role-check
+  etc. For example, list users should be allowed by user with admin role or the
+  logged in user for his own data.
+  Among the things to add:
+  1. endpoint authentication
+  2. request liveliness
+  3. unauthorized endpoint access.
+
+  For this, let's first start with users.get call. Only authenticated user or admin
+  user is allowed.

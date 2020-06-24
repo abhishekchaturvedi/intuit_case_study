@@ -56,7 +56,7 @@ class AuthView(FlaskView):
 
             # Set the JWTs and the CSRF double submit protection cookies.
             set_access_cookies(response, access_token)
-            current_app.logger.debug('User {0} logged in successfully!'.format(data['username']))
+            current_app.logger.debug('User {0}({1}) logged in successfully!'.format(data['username'], user))
             return response, 200
         else:
             response = jsonify({

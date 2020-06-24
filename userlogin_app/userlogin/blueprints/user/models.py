@@ -124,3 +124,16 @@ class User(db.Model):
         """
         db.session.delete(self)
         return db.session.commit()
+
+    def __str__(self):
+        """
+        Create a human readable version of a class instance.
+
+        :return: self
+        """
+        obj_id = hex(id(self))
+        columns = self.__table__.c.keys()
+
+        values = ', '.join("%s=%r" % (n, getattr(self, n)) for n in columns)
+        return '<%s %s(%s)>' % (obj_id, self.__class__.__name__, values)
+        
