@@ -45,23 +45,25 @@ class AuthView(FlaskView):
 
         # User is valid and password is correct. Create access token
         # for the session and respond OK. Else return error.
-        if user and user.authenticated(password=data['password']):
-            access_token = create_access_token(identity=user.username)
+        if user:
+            if user.authenticated(password=data['password']):
+                user.update_login(success = True, ipaddr = request.remote_addr)
+                access_token = create_access_token(identity=user.username)
+                response = jsonify({
+                    'data': {
+                        'access_token': access_token
+                    }
+                })
+                # Set the JWTs and the CSRF double submit protection cookies.
+                set_access_cookies(response, access_token)
+                current_app.logger.debug('User {0}({1}) logged in successfully!'.format(data['username'], user))
+                return response, 200
+            else:
+                user.update_login(success = False, ipaddr = request.remote_addr)
 
-            response = jsonify({
-                'data': {
-                    'access_token': access_token
-                }
-            })
-
-            # Set the JWTs and the CSRF double submit protection cookies.
-            set_access_cookies(response, access_token)
-            current_app.logger.debug('User {0}({1}) logged in successfully!'.format(data['username'], user))
-            return response, 200
-        else:
-            response = jsonify({
-                'error': {
-                    'message': 'Invalid identity or password'
-                }
-            })
-            return response, 401
+        response = jsonify({
+            'error': {
+                'message': 'Invalid identity or password'
+            }
+        })
+        return response, 401

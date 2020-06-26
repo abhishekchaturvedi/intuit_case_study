@@ -36,6 +36,7 @@ Persistence Mechanism
    flask-sqlalchemy is such a library/package which interacts with the database
    using object like semantics with psycopg2 as the middleware.
 
+
 Code layout:
 - config & instance directories at top level is something required by flask
   these contains settings.py which will have configuration parameters for the
@@ -110,4 +111,12 @@ Steps to build this app:
   theory we may see the need for admin to also be allowed to change the info,
   but for the sake of this, we'll keep things like this.
 
-  
+9. Now that the endpoint authorization is also put in place, the next step is
+   to update/enhance the stats that we keep for the object (User in this case)
+   model. And let's come up with a way to see them. There are two options, we
+   could enhance GetAllUsers API call to provide this information for the
+   authorized user and the admin or we could add a separate db call to do so.
+   Since this craft is about RESTful API demonstration, we'll add this to the
+   /users GET API endpoint. We'd be expecting additional parameters for fuller
+   details.
+   

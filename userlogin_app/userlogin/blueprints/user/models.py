@@ -6,6 +6,12 @@ from collections import OrderedDict
 import pytz
 import datetime
 
+def current_tztime():
+    """
+    return the current time in the current timezone
+    """
+    return datetime.datetime.now(pytz.utc)
+
 
 class User(db.Model):
     """
@@ -33,10 +39,10 @@ class User(db.Model):
 
     # Some stats.
     created_on = db.Column(DateTime(timezone=True),
-                           default=datetime.datetime.now(pytz.utc))
+                           default=current_tztime)
     updated_on = db.Column(DateTime(timezone=True),
-                           default=datetime.datetime.now(pytz.utc),
-                           onupdate=datetime.datetime.now(pytz.utc))
+                           default=current_tztime,
+                           onupdate=current_tztime)
     last_login = db.Column(DateTime(timezone=True),
                            default=None)
     last_signin_ip = db.Column(db.String(64))
@@ -102,6 +108,24 @@ class User(db.Model):
         :return: Updated username object
         """
         self.username = new_username
+        self.save()
+        return self
+
+    def update_login(self, success=True, ipaddr=''):
+        """
+        Update user's Username
+
+        :param success: Whether the login is successful or not
+        :param ipaddr: IP address of the login.
+        :return: Updated username object
+        """
+        if success:
+            self.num_successful_attempts += 1
+        else:
+            self.num_failed_attempts += 1
+
+        self.last_login = current_tztime()
+        self.last_signin_ip = ipaddr
         self.save()
         return self
 

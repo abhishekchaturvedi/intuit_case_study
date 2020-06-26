@@ -10,7 +10,9 @@ from userlogin.blueprints.user.schemas import (
     users_schema,
     user_schema,
     user_query_schema,
-    user_update_schema
+    user_update_schema,
+    user_schema_detailed,
+    users_schema_detailed
 )
 
 
@@ -70,40 +72,42 @@ class UsersView(V1FlaskView):
         current_app.logger.debug('Request: {0}'.format(request))
 
         # Try to get the username from the request.
+        username = None
         try:
-            username = request.args.get('username', default=None, type=str)
-            current_app.logger.debug('Got username {0}'.format(username))
-            if username is None:
-                raise(AttributeError)
-        except AttributeError as e:
-            current_app.logger.debug('Failed to get username from request: {0}'.format(e))
-            if json_data is not None:
-                username = user_query_schema.load(json_data)['username']
-                current_app.logger.debug('Got username {0}'.format(username))
-            else:
-                username = None
+            data = user_query_schema.load(json_data)
+            username = data['username']
+            detailed = data['detailed']
+            current_app.logger.debug('fetching {0} info for {1}'.\
+                                     format('detailed' if detailed else 'short',
+                                            username))
         except Exception as eall:
             current_app.logger.debug('Failed to load query schema: {0}'.format(eall))
-            username = None
+            return jsonify({'error' : 'Malformed requet'}), 400
 
         current_app.logger.debug('Query for username {0}, current_user: {1}'
                                  ', admin: {2}'.format(
                                                     username,
                                                     current_user.username,
                                                     current_user.is_admin()))
-        if username is not None and \
+        if username is not None and username != 'all' and \
             (username == current_user.username or current_user.is_admin()):
             # Good request from current user self or admin for
             # a given user
             user = User.find_user(username)
             if user is not None:
-                response = {'data': user_schema.dump(user)}
+                if detailed:
+                    response = {'data': user_schema_detailed.dump(user)}
+                else:
+                    response = {'data': user_schema.dump(user)}
             else:
                 response = {'error' : 'Failed to find user'}
         elif current_user.is_admin():
             ## Good request, give specific user or all users.
             users = User.query.all()
-            response = {'data' : users_schema.dump(users)}
+            if detailed:
+                response = {'data' : users_schema_detailed.dump(users)}
+            else:
+                response = {'data' : users_schema.dump(users)}
         else:
             response = {
                 'error': 'Invalid request. Not authorized.'

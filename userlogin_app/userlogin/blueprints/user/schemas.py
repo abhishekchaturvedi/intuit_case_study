@@ -8,7 +8,8 @@ from marshmallow import validate, fields, ValidationError
 def ensure_unique(data):
     user = User.find_user(data)
 
-    if user:
+    # Not allowing exisitng user and 'all' as username.
+    if user or data == 'all':
         raise ValidationError('{0} already exists'.format(data))
 
     return data
@@ -43,8 +44,17 @@ class UserSchema(marshmallow.Schema):
         fields = ('created_on', 'username', 'email')
 
 
+class UserSchemaDetailed(marshmallow.Schema):
+    class Meta:
+        fields = ('created_on', 'username', 'email',
+                  'updated_on', 'last_login', 'last_signin_ip',
+                  'num_failed_attempts', 'num_successful_attempts')
+
+
 class UserQuery(marshmallow.Schema):
-    username = fields.Str(required=False, default=None)
+    username = fields.Str(required=True,
+                          validate=[validate.Length(min=3, max=255)])
+    detailed = fields.Bool(required=False, missing=False)
 
 
 class UserUpdateSchema(marshmallow.Schema):
@@ -62,3 +72,5 @@ users_schema = UserSchema(many=True)
 user_schema = UserSchema()
 user_query_schema = UserQuery()
 user_update_schema = UserUpdateSchema()
+user_schema_detailed = UserSchemaDetailed()
+users_schema_detailed = UserSchemaDetailed(many=True)
