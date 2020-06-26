@@ -102,7 +102,7 @@ class User(db.Model):
         :return: Updated username object
         """
         self.username = new_username
-        db.session.commit()
+        self.save()
         return self
 
     def save(self):
@@ -136,4 +136,3 @@ class User(db.Model):
 
         values = ', '.join("%s=%r" % (n, getattr(self, n)) for n in columns)
         return '<%s %s(%s)>' % (obj_id, self.__class__.__name__, values)
-        

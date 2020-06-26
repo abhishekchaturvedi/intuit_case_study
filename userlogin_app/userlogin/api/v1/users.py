@@ -1,6 +1,7 @@
 from flask import jsonify, request, current_app
 from marshmallow import ValidationError
 from flask_jwt_extended import jwt_required, current_user
+from flask_jwt_extended import create_access_token, set_access_cookies
 
 from userlogin.api.v1 import V1FlaskView
 from userlogin.blueprints.user.models import User
@@ -108,10 +109,16 @@ class UsersView(V1FlaskView):
                 'error': 'Invalid request. Not authorized.'
             }
 
-            return jsonify(response), 422
+            return jsonify(response), 401
 
         return response, 200
 
+    # The jwt required here ensures that only the user having the valid
+    # token presented to them earlier will have access to this endpoint.
+    # This is the functionality we get from the framework. Which would
+    # mean that non-logged in users can't even get here. Rest of the
+    # Permission checking logic should be in the endpoint.
+    @jwt_required
     def delete(self):
         json_data = request.get_json()
         # Try to get the username from the request.
@@ -129,23 +136,31 @@ class UsersView(V1FlaskView):
             current_app.logger.debug('Failed to load query schema: {0}'.format(eall))
             username = None
 
-        if username is not None:
+        if username is not None and \
+           (match_current_user(username) or current_user.is_admin()):
             # Good request from current user self or admin for
             # a given user
             user = User.find_user(username)
+            # Won't let admins account be deleted (this should be fixed
+            # further. It's not like we don't want to delete admins role
+            # but we just don't want the last admin to be deleted in most
+            # cases. Otherwise admin deletion should actually be OK.)
             if user is not None and not user.is_admin():
                 user.delete()
-                response = {'message' : 'User deleted successfully'}
+                return jsonify({'message' : 'User deleted successfully'}), 200
             else:
-                return jsonify({'error' : 'failed to find user'}), 400
+                return jsonify({'error' : 'failed to find user'}), 404
         else:
-            return jsonify({'error' : 'Unsupported'}), 400
+            return jsonify({'error' : 'All user delete not supported'}), 400
 
-        return response, 200
-
+    # The jwt required here ensures that only the user having the valid
+    # token presented to them earlier will have access to this endpoint.
+    # This is the functionality we get from the framework. Which would
+    # mean that non-logged in users can't even get here. Rest of the
+    # Permission checking logic should be in the endpoint.
+    @jwt_required
     def patch(self):
         json_data = request.get_json()
-
         current_app.logger.debug('Got data: {0}'.format(json_data))
         current_app.logger.debug('type(current user): {0}'.format(type(current_user)))
         current_app.logger.debug('current user: {0}'.format(current_user))
@@ -167,14 +182,15 @@ class UsersView(V1FlaskView):
             current_app.logger.debug('Failed to load query schema: {0}'.format(eall))
             username = None
 
-        if username is not None:
+        if username is not None and match_current_user(username):
             # Good request from current user self or admin for
             # a given user
             user = User.find_user(username)
             if user is not None:
                 user.update_username(new_username)
-                response = {'data': user_schema.dump(user)}
+                current_app.logger.debug('Updated successfully! {0}'.format(user))
+                return jsonify({'data': user_schema.dump(user)}), 200
             else:
-                response = {'error' : 'Failed to find user'}
-
-        return response, 200
+                return jsonify({'error' : 'failed to find user'}), 404
+        else:
+            return jsonify({'error' : 'All user delete not supported'}), 400

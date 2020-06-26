@@ -104,3 +104,10 @@ Steps to build this app:
 
   For this, let's first start with users.get call. Only authenticated user or admin
   user is allowed.
+
+9. User delete should be allowed only by admin or the user themselves.
+   User update should only be allowed by the user themselves and not admin. (In
+  theory we may see the need for admin to also be allowed to change the info,
+  but for the sake of this, we'll keep things like this.
+
+  

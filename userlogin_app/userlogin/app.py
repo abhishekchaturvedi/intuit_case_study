@@ -43,13 +43,13 @@ def create_app():
     marshmallow.init_app(app)
     jwt.init_app(app)
 
-    init_jwt_callbacks()
+    init_jwt_callbacks(app)
     app.jinja_env.globals.update(current_user=current_user)
 
     return app
 
 
-def init_jwt_callbacks():
+def init_jwt_callbacks(app):
     """
     Setup behavior for JWT  based authentication. We can protect various API
     endpoints using the JWT authentication. However, for that to work, we need
@@ -63,4 +63,5 @@ def init_jwt_callbacks():
 
     @jwt.user_loader_callback_loader
     def user_loader_callback(identity):
-        return User.query.filter((User.username == identity)).first()
+        app.logger.debug("Loading user {0}".format(identity))
+        return User.find_user(identity)
