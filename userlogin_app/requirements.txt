@@ -18,6 +18,10 @@ marshmallow==3.0.1
 flask-jwt-extended==3.21.0
 marshmallow-sqlalchemy
 
+# Async tasks
+redis
+celery
+
 # Misc.
 pytz==2020.1
 

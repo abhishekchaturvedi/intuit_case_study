@@ -119,4 +119,26 @@ Steps to build this app:
    Since this craft is about RESTful API demonstration, we'll add this to the
    /users GET API endpoint. We'd be expecting additional parameters for fuller
    details.
-   
+
+10. Now that we have all the API endpoints working as expected, we are going to
+   add confirmations using secret-tokens for activities like registration.
+   The intention behind doing this is 2 fold:
+   1. added security to the registration process.
+   2. demonstration of inategrating with other services (celery in ths case as
+      explained below) for adding async tasks to this craft.
+
+   So, ideally, only users which are 'active' or 'confirmed' should be allowed
+   certain API access on to their account (restricted access in other words).
+   For this, we'll use /api/auth/confirm endpoint. So, following things have to
+   happen:
+   1. by default the new account should be not-'active'
+   2. on signup, automatically generate an email to user's email address with
+      which when confirmed by the user will make the user active. (More on this
+      later)
+   3. Until the user confirms the account, users/get shouldn't let the user fetch
+   information.
+
+   NOTE: for async tasks we will be using celery. Celery is a distributed
+   framework for task scheduling. Tasks get pushed to a client (from our app)
+   and notified to an worker agent through a broker (for which we'll be using
+   redis)

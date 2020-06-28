@@ -4,6 +4,8 @@ from flask_marshmallow import Marshmallow
 from flask_jwt_extended import JWTManager, current_user
 import logging
 from flask.logging import default_handler
+from celery import Celery
+from celery.schedules import crontab
 
 db = SQLAlchemy()
 marshmallow = Marshmallow()
@@ -17,6 +19,8 @@ from userlogin.blueprints.user.models import User
 formatter = logging.Formatter(
     '[%(asctime)s] %(module)s:%(funcName)s:%(lineno)d[%(levelname)s] %(message)s'
 )
+
+CELERY_TASKS = [userlogin.tasks]
 
 def create_app():
     """
@@ -65,3 +69,39 @@ def init_jwt_callbacks(app):
     def user_loader_callback(identity):
         app.logger.debug("Loading user {0}".format(identity))
         return User.find_user(identity)
+
+
+def create_celery_app():
+    """
+    Create a basic celery object and inform it to use settings from the config.
+    We need to be able to provide tasks list to celery.
+    see: https://flask.palletsprojects.com/en/0.12.x/patterns/celery/
+    There are simpler ways to do this probably, but subclassing with Celery's
+    base Task class gives the flask application context to the celery tasks.
+    """
+
+    app = create_app() # This is our flask app.
+    # Just to try out -- Create simple periodic task
+    # For this task to run, we need to make sure that celery also runs the
+    # beat scheduler throuth it's command line.
+    app.config['CELERYBEAT_SCHEDULE'] = {
+                 'periodic-task-echo_every_1_min' : {
+                     'task': 'echo_every_1_min',
+                     'schedule' : crontab(minute="*")
+                 }
+             }
+    celery = Celery(app.import_name,
+                    broker=app.config['CELERY_BROKER_URL'],
+                    backend=app.config['CELERY_RESULT_BACKEND'],
+                    include=CELERY_TASKS)
+
+    celery.conf.update(app.config)
+    TaskBase = celery.Task
+    class ContextTask(TaskBase):
+        abstract = True
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return TaskBase.__call__(self, *args, **kwargs)
+
+    celery.Task = ContextTask
+    return celery

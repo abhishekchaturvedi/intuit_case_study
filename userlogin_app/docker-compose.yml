@@ -10,6 +10,14 @@ services:
     env_file:
       - '.env'
 
+  redis:
+    image: 'redis:6.0-alpine'
+    command: redis-server --requirepass devpassword
+    volumes:
+      - 'redis:/var/lib/redis/data'
+    ports:
+      - '6379:6379'
+
   userlogin_app:
     build: .
     #command: gunicorn -b 0.0.0.0:8001 --access-logfile - --reload "userlogin.app:create_app()"
@@ -22,5 +30,18 @@ services:
     depends_on:
       - "postgres"
 
+  celery:
+    build: .
+    command: celery worker -B -l debug -A userlogin.tasks
+    env_file:
+      - '.env'
+    volumes:
+      - '.:/userlogin'
+    depends_on:
+      - "userlogin_app"
+      - "redis"
+
+
 volumes:
   postgres: {}
+  redis: {}
