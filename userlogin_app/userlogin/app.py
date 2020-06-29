@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from flask_mail import Mail
 from flask_jwt_extended import JWTManager, current_user
 import logging
 from flask.logging import default_handler
@@ -10,8 +11,10 @@ from celery.schedules import crontab
 db = SQLAlchemy()
 marshmallow = Marshmallow()
 jwt = JWTManager()
+mail_extension = Mail()
 
 from userlogin.blueprints.user import user
+from userlogin.api.confirm import ConfirmView
 from userlogin.api.auth import AuthView
 from userlogin.api.v1.users import UsersView
 from userlogin.blueprints.user.models import User
@@ -20,7 +23,7 @@ formatter = logging.Formatter(
     '[%(asctime)s] %(module)s:%(funcName)s:%(lineno)d[%(levelname)s] %(message)s'
 )
 
-CELERY_TASKS = [userlogin.tasks]
+CELERY_TASKS = ['userlogin.tasks']
 
 def create_app():
     """
@@ -40,12 +43,14 @@ def create_app():
     app.logger.debug(app.config)
     app.register_blueprint(user)
     AuthView.register(app)
+    ConfirmView.register(app)
     UsersView.register(app)
 
     # Initialize extentions to our app.
     db.init_app(app)
     marshmallow.init_app(app)
     jwt.init_app(app)
+    mail_extension.init_app(app)
 
     init_jwt_callbacks(app)
     app.jinja_env.globals.update(current_user=current_user)
@@ -81,15 +86,15 @@ def create_celery_app():
     """
 
     app = create_app() # This is our flask app.
-    # Just to try out -- Create simple periodic task
-    # For this task to run, we need to make sure that celery also runs the
-    # beat scheduler throuth it's command line.
-    app.config['CELERYBEAT_SCHEDULE'] = {
-                 'periodic-task-echo_every_1_min' : {
-                     'task': 'echo_every_1_min',
-                     'schedule' : crontab(minute="*")
-                 }
-             }
+    # # Just to try out -- Create simple periodic task
+    # # For this task to run, we need to make sure that celery also runs the
+    # # beat scheduler throuth it's command line.
+    # app.config['CELERYBEAT_SCHEDULE'] = {
+    #              'periodic-task-echo_every_1_min' : {
+    #                  'task': 'echo_every_1_min',
+    #                  'schedule' : crontab(minute="*")
+    #              }
+    #          }
     celery = Celery(app.import_name,
                     broker=app.config['CELERY_BROKER_URL'],
                     backend=app.config['CELERY_RESULT_BACKEND'],

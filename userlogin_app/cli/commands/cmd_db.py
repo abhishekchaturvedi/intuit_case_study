@@ -6,6 +6,7 @@ from userlogin.app import create_app
 from userlogin.app import db
 from userlogin.blueprints.user.models import User
 
+
 # Create an app context for the database connection.
 app = create_app()
 db.app = app
@@ -44,7 +45,8 @@ def seed():
         'role': 'admin',
         'username': app.config['SEED_ADMIN_USERNAME'],
         'email': app.config['SEED_ADMIN_EMAIL'],
-        'password': app.config['SEED_ADMIN_PASSWORD']
+        'password': app.config['SEED_ADMIN_PASSWORD'],
+        'active': True
     }
 
     return User(**params).save()
@@ -64,6 +66,13 @@ def reset(ctx):
     return None
 
 
+@click.command()
+@click.pass_context
+def list(ctx):
+    click.echo(dir(db))
+
+
 cli.add_command(init)
 cli.add_command(seed)
 cli.add_command(reset)
+cli.add_command(list)

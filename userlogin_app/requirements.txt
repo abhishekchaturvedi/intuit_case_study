@@ -1,6 +1,6 @@
 # The framework
 Flask==1.1.1
-werkzeug==0.15.5
+Flask-Mail
 
 # WSGI HTTP Server
 gunicorn==19.9.0

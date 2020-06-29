@@ -44,6 +44,8 @@ class UsersView(V1FlaskView):
 
         try:
             data = registration_schema.load(json_data)
+            current_app.logger.debug(type(data))
+            current_app.logger.debug(data)
         except ValidationError as err:
             response = {
                 'error': err.messages
@@ -56,7 +58,9 @@ class UsersView(V1FlaskView):
         user.username = data.get('username')
         user.password = User.encrypt_pass(data.get('password'))
         user.save()
-
+        activate_token = User.initiate_activation(user)
+        data.update({'message' : "Please check your email for activating the account"})
+        data.update({'token' : activate_token})
         return jsonify(data), 200
 
     # The jwt required here ensures that only the user having the valid
@@ -95,10 +99,15 @@ class UsersView(V1FlaskView):
             # a given user
             user = User.find_user(username)
             if user is not None:
-                if detailed:
-                    response = {'data': user_schema_detailed.dump(user)}
+                current_app.logger.debug('User: {0}'.format(user))
+                if user.active:
+                    if detailed:
+                        response = {'data': user_schema_detailed.dump(user)}
+                    else:
+                        response = {'data': user_schema.dump(user)}
                 else:
-                    response = {'data': user_schema.dump(user)}
+                    response = {'error' :
+                                'user is not active. acticate with /auth/activate <email>'}
             else:
                 response = {'error' : 'Failed to find user'}
         elif current_user.is_admin():
