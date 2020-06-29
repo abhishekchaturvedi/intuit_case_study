@@ -106,8 +106,7 @@ class UsersView(V1FlaskView):
                     else:
                         response = {'data': user_schema.dump(user)}
                 else:
-                    response = {'error' :
-                                'user is not active. acticate with /auth/activate <email>'}
+                    response = {'error' : 'user is not active.'}
             else:
                 response = {'error' : 'Failed to find user'}
         elif current_user.is_admin():
@@ -181,12 +180,6 @@ class UsersView(V1FlaskView):
         # Try to get the username from the request.
         try:
             current_app.logger.debug('Trying to get username from request: {0}'.format(request))
-            username = request.args.get('username', default=None, type=str)
-            current_app.logger.debug('Got username {0}'.format(username))
-            if username is None:
-                raise(AttributeError)
-        except AttributeError as e:
-            current_app.logger.debug('Failed to get username from request: {0}'.format(e))
             data = user_update_schema.load(json_data)
             username = data['username']
             new_username = data['new_username']
@@ -200,10 +193,13 @@ class UsersView(V1FlaskView):
             # a given user
             user = User.find_user(username)
             if user is not None:
-                user.update_username(new_username)
-                current_app.logger.debug('Updated successfully! {0}'.format(user))
-                return jsonify({'data': user_schema.dump(user)}), 200
+                if user.active:
+                    user.update_username(new_username)
+                    current_app.logger.debug('Updated successfully! {0}'.format(user))
+                    return jsonify({'data': user_schema.dump(user)}), 200
+                else:
+                    return jsonify({'error' : 'User is not active. Please activate'}), 401
             else:
                 return jsonify({'error' : 'failed to find user'}), 404
         else:
-            return jsonify({'error' : 'All user delete not supported'}), 400
+            return jsonify({'error' : 'Invalid input'}), 422
