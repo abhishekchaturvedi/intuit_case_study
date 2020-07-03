@@ -1,0 +1,808 @@
+{
+	"info": {
+		"_postman_id": "824acf7e-dec2-48af-99dc-069d307a8f35",
+		"name": "UserTest",
+		"description": "User API tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "LoginInvalidUser",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "99998c36-e794-4eba-a981-e3142b2461cd",
+						"exec": [
+							"var xsrfCookie = postman.getResponseCookie(\"csrf_access_token\"); ",
+							"var accessToken = postman.getResponseCookie(\"access_token_cookie\"); ",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"postman.setEnvironmentVariable('csrf_access_token', xsrfCookie.value);",
+							"postman.setEnvironmentVariable('access_token_cookie', accessToken.value);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{server_name}}/api/v1/users",
+					"protocol": "http",
+					"host": [
+						"{{server_name}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LoginAdminUser",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4eb7fee1-ce85-456f-87b2-5ee9603b040f",
+						"exec": [
+							"var accToken = pm.response.headers.get(\"access_token\");",
+							"var csrfToken = pm.response.headers.get(\"csrf_access_token\")",
+							"pm.environment.set(\"access_token\", accToken)",
+							"pm.environment.set(\"csrf_access_token\", csrfToken)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"dev@local.host\",\"password\":\"devpassword\"}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{server_name}}/api/auth/",
+					"protocol": "http",
+					"host": [
+						"{{server_name}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddUserNegative",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ec3399b9-f7de-4f9e-ae13-0858b1110f7c",
+						"exec": [
+							"var xsrfCookie = postman.getResponseCookie(\"csrf_access_token\"); ",
+							"var accessToken = postman.getResponseCookie(\"access_token_cookie\"); ",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"postman.setEnvironmentVariable('csrf_access_token', xsrfCookie.value);",
+							"postman.setEnvironmentVariable('access_token_cookie', accessToken.value);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"dev@local.host\",\"email\": \"dev@local.host\", \"password\":\"devpassword\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{server_name}}/api/v1/users",
+					"protocol": "http",
+					"host": [
+						"{{server_name}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users"
+					]
+				},
+				"description": "Adding a user"
+			},
+			"response": []
+		},
+		{
+			"name": "AddUserNew",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8639e0c2-3473-43c1-a838-ab45625c1ace",
+						"exec": [
+							"var xsrfCookie = postman.getResponseCookie(\"csrf_access_token\"); ",
+							"var accessToken = postman.getResponseCookie(\"access_token_cookie\"); ",
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"postman.setEnvironmentVariable('csrf_access_token', xsrfCookie.value);",
+							"postman.setEnvironmentVariable('access_token_cookie', accessToken.value);",
+							"postman.setEnvironmentVariable('token', jsonData.token)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"user1\",\"email\": \"user1@localhost.com\", \"password\":\"user1password\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{server_name}}/api/v1/users",
+					"protocol": "http",
+					"host": [
+						"{{server_name}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllUsers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "01987544-8fd5-446e-9b99-b76ce306d813",
+						"exec": [
+							"var xsrfCookie = postman.getResponseCookie(\"csrf_access_token\"); ",
+							"var accessToken = postman.getResponseCookie(\"access_token_cookie\"); ",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"postman.setEnvironmentVariable('csrf_access_token', xsrfCookie.value);",
+							"postman.setEnvironmentVariable('access_token_cookie', accessToken.value);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"all\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{server_name}}/api/v1/users",
+					"protocol": "http",
+					"host": [
+						"{{server_name}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users"
+					]
+				},
+				"description": "    "
+			},
+			"response": []
+		},
+		{
+			"name": "GetUser",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f326805e-fd1e-4720-bd7b-6b0b48cbb996",
+						"exec": [
+							"var xsrfCookie = postman.getResponseCookie(\"csrf_access_token\"); ",
+							"var accessToken = postman.getResponseCookie(\"access_token_cookie\"); ",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"postman.setEnvironmentVariable('csrf_access_token', xsrfCookie.value);",
+							"postman.setEnvironmentVariable('access_token_cookie', accessToken.value);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"user1\"}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{server_name}}/api/v1/users",
+					"protocol": "http",
+					"host": [
+						"{{server_name}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users"
+					]
+				},
+				"description": "    "
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllUsersDetailed",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"all\", \"detailed\" : \"true\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{server_name}}/api/v1/users",
+					"protocol": "http",
+					"host": [
+						"{{server_name}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LoginValidUserNonAdmin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1fb221ad-c42b-4a3c-b559-b9dc647f0911",
+						"exec": [
+							"var xsrfCookie = postman.getResponseCookie(\"csrf_access_token\"); ",
+							"var accessToken = postman.getResponseCookie(\"access_token_cookie\"); ",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"postman.setEnvironmentVariable('csrf_access_token', xsrfCookie.value);",
+							"postman.setEnvironmentVariable('access_token_cookie', accessToken.value);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"user1_new\",\"password\":\"user1password\"}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{server_name}}/api/auth/",
+					"protocol": "http",
+					"host": [
+						"{{server_name}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUserDetailed",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"user1\", \"detailed\" : \"true\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{server_name}}/api/v1/users",
+					"protocol": "http",
+					"host": [
+						"{{server_name}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateUserName",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7f19fb70-043f-4954-ae2b-fc4903474aff",
+						"exec": [
+							"var xsrfCookie = postman.getResponseCookie(\"csrf_access_token\"); ",
+							"var accessToken = postman.getResponseCookie(\"access_token_cookie\"); ",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"postman.setEnvironmentVariable('csrf_access_token', xsrfCookie.value);",
+							"postman.setEnvironmentVariable('access_token_cookie', accessToken.value);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_cookie}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "X-CSRF-TOKEN",
+						"value": "{{csrf_access_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"user1\",\"new_username\": \"user1_new\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{server_name}}/api/v1/users",
+					"protocol": "http",
+					"host": [
+						"{{server_name}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteUserNegative",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b0010370-2811-4731-934c-6cb1c9862770",
+						"exec": [
+							"var xsrfCookie = postman.getResponseCookie(\"csrf_access_token\"); ",
+							"var accessToken = postman.getResponseCookie(\"access_token_cookie\"); ",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"postman.setEnvironmentVariable('csrf_access_token', xsrfCookie.value);",
+							"postman.setEnvironmentVariable('access_token_cookie', accessToken.value);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "X-CSRF-TOKEN",
+						"value": "{{csrf_access_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"user1_new\"}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{server_name}}/api/v1/users",
+					"protocol": "http",
+					"host": [
+						"{{server_name}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users"
+					]
+				},
+				"description": "    "
+			},
+			"response": []
+		},
+		{
+			"name": "LoginValidUserNonAdminUpdated",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "97f7a7bf-4421-4ba9-87ea-edcb14d449df",
+						"exec": [
+							"var xsrfCookie = postman.getResponseCookie(\"csrf_access_token\"); ",
+							"var accessToken = postman.getResponseCookie(\"access_token_cookie\"); ",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"postman.setEnvironmentVariable('csrf_access_token', xsrfCookie.value);",
+							"postman.setEnvironmentVariable('access_token_cookie', accessToken.value);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"user1_new\",\"password\":\"user1password\"}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{server_name}}/api/auth/",
+					"protocol": "http",
+					"host": [
+						"{{server_name}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteUserUpdated",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6ff0fe0e-be81-4e67-8d1e-91e3f957f454",
+						"exec": [
+							"var xsrfCookie = postman.getResponseCookie(\"csrf_access_token\"); ",
+							"var accessToken = postman.getResponseCookie(\"access_token_cookie\"); ",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"postman.setEnvironmentVariable('csrf_access_token', xsrfCookie.value);",
+							"postman.setEnvironmentVariable('access_token_cookie', accessToken.value);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "X-CSRF-TOKEN",
+						"value": "{{csrf_access_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"user1_new\"}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{server_name}}/api/v1/users",
+					"protocol": "http",
+					"host": [
+						"{{server_name}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users"
+					]
+				},
+				"description": "    "
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteUserAdmin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "70e3dab6-3ea3-44d7-9712-2b461b1db19d",
+						"exec": [
+							"var xsrfCookie = postman.getResponseCookie(\"csrf_access_token\"); ",
+							"var accessToken = postman.getResponseCookie(\"access_token_cookie\"); ",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"postman.setEnvironmentVariable('csrf_access_token', xsrfCookie.value);",
+							"postman.setEnvironmentVariable('access_token_cookie', accessToken.value);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"dev@local.host\"}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{server_name}}/api/v1/users",
+					"protocol": "http",
+					"host": [
+						"{{server_name}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users"
+					]
+				},
+				"description": "    "
+			},
+			"response": []
+		},
+		{
+			"name": "AddUserNewAgain",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "26b694e0-79f4-473b-8bd5-83a86768a336",
+						"exec": [
+							"var xsrfCookie = postman.getResponseCookie(\"csrf_access_token\"); ",
+							"var accessToken = postman.getResponseCookie(\"access_token_cookie\"); ",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"postman.setEnvironmentVariable('csrf_access_token', xsrfCookie.value);",
+							"postman.setEnvironmentVariable('access_token_cookie', accessToken.value);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"user1\",\"email\": \"user1@localhost.com\", \"password\":\"user1password\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{server_name}}/api/v1/users",
+					"protocol": "http",
+					"host": [
+						"{{server_name}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FailedLoginRequest",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"dev\",\"password\":\"badpassword\"}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{server_name}}/api/auth/",
+					"protocol": "http",
+					"host": [
+						"{{server_name}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ConfirmUser",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cf591841-2c56-4d14-ab87-acb7c5327dcf",
+						"exec": [
+							"postman.clearEnvironmentVariable(\"activate_token\");",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"token\": {{token}}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{server_name}}/api/confirm/",
+					"protocol": "http",
+					"host": [
+						"{{server_name}}"
+					],
+					"path": [
+						"api",
+						"confirm",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
