@@ -1,3 +1,14 @@
+
+To run the app follow steps:
+
+- docker-compose up --build
+- run postman, load UserTest.postman_collection.json
+
+
+===============================================================================
+=============  Discussion & description of requirements and steps =============
+===============================================================================
+
 Technical Craft Demonstration Instructions:
 Design and develop a RESTful web service that enables the creation of a
 new user, login an existing user with username/password and the ability to keep
@@ -19,13 +30,14 @@ Relationships:
 
 RESTful APIs:
  * PROVIDE CRUD interface for api endpoints -- wherever applicable.
-- /api/<version-num>/users/ GET -- lists the users (only for admins (or if there's some
-                           feature in the future which shows community etc.
+- /api/<version-num>/users/ GET -- lists the users (only for admins (or if
+                                   there's some feature in the future which
+                                   shows community etc.
 - /api/<version-num>/users/ POST -- creates a new user
 - /api/<version-num>/users/ DELETE -- delete all users (only for admins)
-- /api/<version-num>/users/<id> GET -- gets info for user with user-id <id>
-- /api/<version-num>/users/<id> PATCH - update information for user with user-ide <id>
-- /api/<version-num>/users/<id> DELETE - deletes information for user with user-id <id>
+- /api/<version-num>/users/<id> GET -- gets info for user with userid <id>
+- /api/<version-num>/users/<id> PATCH - update information for user with userid <id>
+- /api/<version-num>/users/<id> DELETE - deletes information for user with userid <id>
 
 
 Persistence Mechanism
@@ -91,9 +103,9 @@ Steps to build this app:
 - /api/<version-num>/users/ GET -- lists the users (only for admins (or if there's some
                            feature in the future which shows community etc.
 - /api/<version-num>/users/ DELETE -- delete all users (only for admins)
-- /api/<version-num>/users/<id> GET -- gets info for user with user-id <id>
-- /api/<version-num>/users/<id> PATCH - update information for user with user-ide <id>
-- /api/<version-num>/users/<id> DELETE - deletes information for user with user-id <id>
+- /api/<version-num>/users/<id> GET -- gets info for user with userid <id>
+- /api/<version-num>/users/<id> PATCH - update information for user with userid <id>
+- /api/<version-num>/users/<id> DELETE - deletes information for user with userid <id>
 
 8. Next step is to review each of these APIs and add security/validation/role-check
   etc. For example, list users should be allowed by user with admin role or the
@@ -124,7 +136,7 @@ Steps to build this app:
    add confirmations using secret-tokens for activities like registration.
    The intention behind doing this is 2 fold:
    1. added security to the registration process.
-   2. demonstration of inategrating with other services (celery in ths case as
+   2. demonstration of integrating with other services (celery in the case as
       explained below) for adding async tasks to this craft.
 
    So, ideally, only users which are 'active' or 'confirmed' should be allowed

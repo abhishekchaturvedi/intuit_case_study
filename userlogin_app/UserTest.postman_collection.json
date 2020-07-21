@@ -694,12 +694,14 @@
 						"exec": [
 							"var xsrfCookie = postman.getResponseCookie(\"csrf_access_token\"); ",
 							"var accessToken = postman.getResponseCookie(\"access_token_cookie\"); ",
+							"var jsonData = JSON.parse(responseBody);",
+							"",
 							"pm.test(\"Content-Type is present\", function () {",
 							"    pm.response.to.have.header(\"Content-Type\");",
 							"});",
 							"postman.setEnvironmentVariable('csrf_access_token', xsrfCookie.value);",
 							"postman.setEnvironmentVariable('access_token_cookie', accessToken.value);",
-							""
+							"postman.setEnvironmentVariable('activation_token', jsonData.token)"
 						],
 						"type": "text/javascript"
 					}
@@ -781,7 +783,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"token\": {{token}}}",
+					"raw": "{\"token\": \"{{activation_token}}\"}",
 					"options": {
 						"raw": {
 							"language": "json"
