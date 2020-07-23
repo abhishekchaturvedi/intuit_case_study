@@ -1,7 +1,19 @@
+================================================================================
+======================= INSTRUCTIONS TO RUN & TEST =============================
+================================================================================
 
 To run the app follow steps:
 
-- docker-compose up --build
+./start.sh
+
+To stop, run:
+
+./stop.sh
+
+To reset DB, run:
+
+./reset.sh
+
 - run postman, load UserTest.postman_collection.json
 
 
